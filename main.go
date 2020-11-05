@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -32,8 +33,8 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 func lineHandler(w http.ResponseWriter, r *http.Request) {
 	// BOTを初期化
 	bot, err := linebot.New(
-		os.Getenv("SECRET"),
-		os.Getenv("TOKEN"),
+		os.Getenv("LINE_SECRET"),
+		os.Getenv("LINE_TOKEN"),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -60,8 +61,27 @@ func lineHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Print(err)
 				}
+			//メッセージが位置情報の場合
+			case *linebot.LocationMessage:
+				sendRestoInfo(bot, event)
 			}
 			// 他にもスタンプや画像、位置情報など色々受信可能
 		}
+	}
+}
+
+func sendRestoInfo(bot *linebot.Client, e *linebot.Event) {
+	// 位置情報メッセージの取得
+	msg := e.Message.(*linebot.LocationMessage)
+
+	//strconv.FormatFloatで値を文字列に変換する
+	lat := strconv.FormatFloat(msg.Latitude, 'f', 2, 64)
+	lng := strconv.FormatFloat(msg.Longitude, 'f', 2, 64)
+
+	replyMsg := fmt.Sprintf("緯度：%s\n経度：%s", lat, lng)
+
+	_, err := bot.ReplyMessage(e.ReplyToken, linebot.NewTextMessage(replyMsg)).Do()
+	if err != nil {
+		log.Print(err)
 	}
 }
