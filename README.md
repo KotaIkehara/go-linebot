@@ -10,5 +10,5 @@
  Go, ngrok
  
  # 利用API
- HOR PEPPERグルメ　[グルメサーチAPI](https://webservice.recruit.co.jp/doc/hotpepper/reference.html)
+ HOT PEPPERグルメ　[グルメサーチAPI](https://webservice.recruit.co.jp/doc/hotpepper/reference.html)
  
